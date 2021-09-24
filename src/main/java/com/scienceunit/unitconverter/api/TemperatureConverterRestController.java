@@ -15,8 +15,8 @@ public class TemperatureConverterRestController {
 
     @GetMapping("/convert")
     public String convert(
-        @RequestParam(name = "input_unit") String input_unit,
         @RequestParam(name = "input_value") double value,
+        @RequestParam(name = "input_unit") String input_unit,
         @RequestParam(name = "target_unit") String target_unit,
         @RequestParam(name = "debug_precision", defaultValue = "1", required = false) int precision
     ){
