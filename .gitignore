@@ -38,3 +38,4 @@ out/
 
 ### nodejs ###
 node_modules/
+/src/main/resources/static/dist/**

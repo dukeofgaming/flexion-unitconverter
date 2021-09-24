@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import ReactDOM from 'react-dom';
 
-class Main extends Component {
+
+
+
+class TemperatureConversionGradingApp extends Component {
     render() {
         return (
             <div>
@@ -13,6 +16,6 @@ class Main extends Component {
 }
 
 ReactDOM.render(
-    <Main />,
-    document.getElementById('react-mountpoint')
+    <TemperatureConversionGradingApp />,
+    document.getElementById('react-TemperatureConversionGradingApp')
 );

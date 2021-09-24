@@ -1,7 +1,7 @@
 module.exports = {
     devtool: 'source-map',
     output: {
-        filename: 'react-app.js'
+        filename: 'TemperatureConversionGradingApp.js'
     },
     module: {
         rules: [{
