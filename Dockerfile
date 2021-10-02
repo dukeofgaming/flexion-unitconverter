@@ -19,20 +19,20 @@ RUN apt install -y nodejs
 #Installing gradle
 RUN wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip \
     && mkdir -p /opt/gradle \
-    && unzip -d /opt/gradle /tmp/gradle-*.zip \
-
+    && unzip -d /opt/gradle /tmp/gradle-*.zip
 
 ENV GRADLE_HOME="/opt/gradle/gradle-${GRADLE_VERSION}"
 ENV PATH="${GRADLE_HOME}/bin:${PATH}"
 
-
+#Building project JAR file
 RUN mkdir -p /app
 COPY src/. /app
 WORKDIR /app
 RUN gradle build
 
+#Production Image
 FROM openjdk:16-jdk-alpine
 
 RUN mkdir -p /app
-COPY --from=build /app/src/build/libs/*.jar /app/
+COPY --from=build /app/build/libs/*.jar /app/
 ENTRYPOINT ["java","-jar","/app/unitconverter-0.0.1-SNAPSHOT.jar"]
