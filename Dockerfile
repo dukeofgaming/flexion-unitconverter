@@ -3,8 +3,8 @@ FROM ubuntu:21.04 as build
 ARG GRADLE_VERSION="7.2"
 ARG NODE_DIST="16.x"
 
-RUN apt update && \
-    apt install -y \
+RUN apt-get update && \
+    apt-get install -y \
         curl \
         wget \
         unzip \
@@ -14,7 +14,7 @@ WORKDIR /tmp
 
 #Installing nodejs
 RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_DIST} | bash -
-RUN apt install -y nodejs
+RUN apt-get install -y nodejs
 
 #Installing gradle
 RUN wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip \
