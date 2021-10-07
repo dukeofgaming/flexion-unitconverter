@@ -2,6 +2,7 @@ FROM ubuntu:21.04 as build
 
 ARG GRADLE_VERSION="7.2"
 ARG NODE_DIST="16.x"
+ARG BUILD_VERSION="0.0.1-SNAPSHOT"
 
 RUN apt-get update && \
     apt-get install -y \
@@ -28,11 +29,15 @@ ENV PATH="${GRADLE_HOME}/bin:${PATH}"
 RUN mkdir -p /app
 COPY src/. /app
 WORKDIR /app
-RUN gradle build
+RUN gradle build -P version="$BUILD_VERSION" && \
+    echo "${BUILD_VERSION}" >> version.txt
 
 #Production Image
 FROM openjdk:16-jdk-alpine
 
 RUN mkdir -p /app
+
 COPY --from=build /app/build/libs/*.jar /app/
-ENTRYPOINT ["java","-jar","/app/unitconverter-0.0.1-SNAPSHOT.jar"]
+COPY --from=build /app/version.txt /app/version.txt
+
+ENTRYPOINT java -jar /app/unitconverter-`cat /app/version.txt`.jar
