@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.scienceunit'
-version = '0.0.1-SNAPSHOT'
+version = "${version != 'unspecified' ? version : '0.0.1-SNAPSHOT'}"
 sourceCompatibility = '16'
 
 node{
