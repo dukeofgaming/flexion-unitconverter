@@ -32,12 +32,20 @@ WORKDIR /app
 RUN gradle build -P version="$BUILD_VERSION" && \
     echo "${BUILD_VERSION}" >> version.txt
 
-#Production Image
+####################
+# Production Image #
+####################
 FROM openjdk:16-jdk-alpine
 
-RUN mkdir -p /app
+#Setup base environment
+RUN mkdir -p /app \
+    && addgroup -S spring \
+    && adduser -S spring -G spring
 
-COPY --from=build /app/build/libs/*.jar /app/
-COPY --from=build /app/version.txt /app/version.txt
+COPY --from=build --chown=spring:spring /app/build/libs/*.jar /app/
+COPY --from=build --chown=spring:spring /app/version.txt /app/version.txt
 
-ENTRYPOINT java -jar /app/unitconverter-`cat /app/version.txt`.jar
+USER spring:spring
+WORKDIR /app
+
+ENTRYPOINT java -jar unitconverter-`cat version.txt`.jar
