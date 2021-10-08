@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from 'react-dom';
+import TextField from '@mui/material/TextField';
 
 class TemperatureConversionGradingApp extends React.Component {
     constructor(props){
@@ -26,7 +27,7 @@ class TemperatureConversionGradingApp extends React.Component {
             return;
         }
 
-        var output_element = element.querySelector("td#output");
+        var output_element = element.querySelector("div[id=output]");
 
         var rounded_student_response    = Math.round(student_response*10)/10;
 
@@ -65,52 +66,31 @@ class TemperatureConversionGradingApp extends React.Component {
     render() {
         return (
             <div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Input Numerical Value</th>
-                            <th>Input Unit of Measure</th>
-                            <th>Target Unit of Measure</th>
-                            <th>Student Response</th>
-                            <th>Output</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <tr>
-                            <td>
-                                <input
-                                    type="text"
-                                    name="input_value"
-                                    onBlur={this.grade}
-                                />
-                            </td>
-                            <td>
-                                <input
-                                    type="text"
-                                    name="input_unit"
-                                    onBlur={this.grade}
-                                />
-                            </td>
-                            <td>
-                                <input
-                                    type="text"
-                                    name="target_unit"
-                                    onBlur={this.grade}
-                                />
-                            </td>
-                            <td>
-                                <input
-                                    type="text"
-                                    name="student_response"
-                                    onBlur={this.grade}
-                                />
-                            </td>
-                            <td id="output">
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <TextField
+                    variant="outlined"
+                    label="Input Numerical Value"
+                    name="input_value"
+                    onBlur={this.grade}
+                />
+                <TextField
+                    variant="outlined"
+                    label="Input Unit of Measure"
+                    name="input_unit"
+                    onBlur={this.grade}
+                />
+                <TextField
+                    variant="outlined"
+                    label="Target Unit of Measure"
+                    name="target_unit"
+                    onBlur={this.grade}
+                />
+                <TextField
+                    variant="outlined"
+                    label="Student Response"
+                    name="student_response"
+                    onBlur={this.grade}
+                />
+                <div id="output" ></div>
             </div>
         );
     }
