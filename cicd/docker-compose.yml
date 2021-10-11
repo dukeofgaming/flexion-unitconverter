@@ -1,0 +1,72 @@
+version: "3.9"
+
+services:
+  nginx:
+    image: nginx:1.20.1
+    networks:
+      - proxy
+    ports:
+      - "80:80"
+      - "443:443"
+
+  jenkins:
+    image: jenkins/jenkins:2.315-jdk11
+    depends_on:
+      - nginx
+    networks:
+      apps:
+        aliases:
+          - jenkins
+      proxy:
+        aliases:
+          - jenkins
+    volumes:
+      - jenkins_data:/var/jenkins_home
+
+  artifactory:
+    image: docker.bintray.io/jfrog/artifactory-jcr:7.27.3
+    depends_on:
+      - nginx
+      - postgres
+    networks:
+      apps:
+        aliases:
+          - artifactory
+      artifactory:
+        aliases:
+          - artifactory
+      proxy:
+        aliases:
+          - artifactory
+    volumes:
+      - artifactory_data:/var/opt/jfrog/artifactory
+
+  postgres:
+    image: postgres:13.4
+    networks:
+      artifactory:
+        aliases:
+          - postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=beer
+
+volumes:
+  jenkins_data:
+    driver: local
+
+  artifactory_data:
+    driver: local
+
+  postgres_data:
+    driver: local
+
+networks:
+  proxy:
+    driver: bridge
+  apps:
+    driver: bridge
+  artifactory:
+    driver: bridge
+
