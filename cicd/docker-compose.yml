@@ -13,7 +13,8 @@ services:
       - "443:443"
 
   jenkins:
-    image: jenkins/jenkins:2.315-jdk11
+    build:
+      context: ./jenkins
     depends_on:
       - nginx
     networks:
@@ -25,6 +26,7 @@ services:
           - jenkins
     volumes:
       - jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
 
   artifactory:
     image: docker.bintray.io/jfrog/artifactory-jcr:7.27.3
