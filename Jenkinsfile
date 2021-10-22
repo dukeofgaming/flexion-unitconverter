@@ -7,7 +7,7 @@ pipeline {
 
 BUILD_VERSION="$VERSION-$GIT_SHORTHASH"
 
-docker build \\
+docker build --rm=false \\
 --build-arg BUILD_VERSION="$BUILD_VERSION" \\
 -t artifactory.localhost/flexion/unitconverter:$VERSION \\
 -t artifactory.localhost/flexion/unitconverter:latest .'''
