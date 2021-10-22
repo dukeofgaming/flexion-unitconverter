@@ -34,6 +34,6 @@ docker build \\
     ARTIFACTORY_DOCKER_REPOSITORY = 'flexion'
     VERSION = '0.0.8-BETA'
     DOCKER_IMAGE = 'unitconverter'
-    GIT_SHORTHASH = 'GIT_COMMIT.take(7)'
+    GIT_SHORTHASH = GIT_COMMIT.take(7)
   }
 }
