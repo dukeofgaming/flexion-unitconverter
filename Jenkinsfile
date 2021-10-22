@@ -5,7 +5,7 @@ pipeline {
       steps {
         sh '''#!/bin/bash -xe
 
-BUILD_VERSION="$VERSION-$GIT_BRANCH-$BUILD_NUMBER"
+BUILD_VERSION="$VERSION-$GIT_SHORTHASH"
 
 docker build \\
 --build-arg BUILD_VERSION="$BUILD_VERSION" \\
@@ -34,5 +34,6 @@ docker build \\
     ARTIFACTORY_DOCKER_REPOSITORY = 'flexion'
     VERSION = '0.0.8-BETA'
     DOCKER_IMAGE = 'unitconverter'
+    GIT_SHORTHASH = 'GIT_COMMIT.take(7)'
   }
 }
