@@ -30,9 +30,7 @@ test {
 task buildReactApp(type: NodeTask, dependsOn: 'npmInstall') {
 	script = project.file('node_modules/webpack/bin/webpack.js')
 	args = [
-		'--mode', 'development',
-		'--entry', './src/main/react/TemperatureConversionGradingApp.jsx',
-		'-o', './src/main/resources/static/dist'
+		'--config', 'webpack.config.js'
 	]
 }
 

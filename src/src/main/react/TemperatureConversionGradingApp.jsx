@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from 'react-dom';
 import TextField from '@mui/material/TextField';
-import Box from '@mui/material/box';
-import Grid from '@mui/material/grid';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 
 class TemperatureConversionGradingApp extends React.Component {
