@@ -31,23 +31,28 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                //TODO: Change usage of root to a user with Docker privileges or invoke normal commands through ssh executable
+
                 sshagent(credentials: ['jenkins_ssh']){
-                    sh '''docker -H ssh://root@$DEPLOY_TARGET \\
-                            login \\
+                    sh '''ssh root@$DEPLOY_TARGET \\
+                            "docker login \\
+                                $ARTIFACTORY_DOCKER_REGISTRY \\
                                 --username $ARTIFACTORY_JENKINS_CREDENTIALS_USR \\
-                                --password $ARTIFACTORY_JENKINS_CREDENTIALS_PSW'''
+                                --password $ARTIFACTORY_JENKINS_CREDENTIALS_PSW" '''
 
-                    sh '''docker -H ssh://root@$DEPLOY_TARGET \\
-                            stop $DEPLOY_CONTAINER_NAME || echo 'No $DEPLOY_CONTAINER_NAME container running' '''
+                    sh '''ssh root@$DEPLOY_TARGET \\
+                            "docker stop $DEPLOY_CONTAINER_NAME \\
+                                || echo 'No $DEPLOY_CONTAINER_NAME container running'" '''
 
-                    sh '''docker -H ssh://root@$DEPLOY_TARGET \\
-                            rm $DEPLOY_CONTAINER_NAME || echo 'No $DEPLOY_CONTAINER_NAME container to remove' '''
+                    sh '''ssh root@$DEPLOY_TARGET \\
+                            "docker rm $DEPLOY_CONTAINER_NAME \\
+                                || echo 'No $DEPLOY_CONTAINER_NAME container to remove'" '''
 
-                    sh '''docker -H ssh://root@$DEPLOY_TARGET \\
-                            run $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:$VERSION \\
-                                -d --name $DEPLOY_CONTAINER_NAME -p 80:8080
-                        '''
+                    sh '''ssh root@$DEPLOY_TARGET \\
+                            "docker run \\
+                                -d \\
+                                --name $DEPLOY_CONTAINER_NAME \\
+                                -p 80:8080
+                                $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:$VERSION" '''
                 }
             }
         }
