@@ -33,6 +33,9 @@ pipeline {
             steps {
 
                 sshagent(credentials: ['jenkins_ssh']){
+                    sh '''[ -d ~/.ssh ] || mkdir ~/.ssh && chmod 0700 ~/.ssh
+                            ssh-keyscan -t rsa,dsa $DEPLOY_TARGET >> ~/.ssh/known_hosts'''
+
                     sh '''ssh root@$DEPLOY_TARGET \\
                             "docker login \\
                                 $ARTIFACTORY_DOCKER_REGISTRY \\
@@ -51,7 +54,7 @@ pipeline {
                             "docker run \\
                                 -d \\
                                 --name $DEPLOY_CONTAINER_NAME \\
-                                -p 80:8080
+                                -p 80:8080 \\
                                 $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:$VERSION" '''
                 }
             }
