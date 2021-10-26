@@ -1,7 +1,7 @@
 FROM ubuntu:21.04 as build
 
 ARG GRADLE_VERSION="7.2"
-ARG NODE_DIST="16.x"
+ARG NODE_DIST="17.x"
 ARG BUILD_VERSION="0.0.1-SNAPSHOT"
 
 RUN apt-get update && \
@@ -29,8 +29,8 @@ ENV PATH="${GRADLE_HOME}/bin:${PATH}"
 RUN mkdir -p /app
 COPY src/. /app
 WORKDIR /app
-RUN gradle build -P version="$BUILD_VERSION" && \
-    echo "${BUILD_VERSION}" >> version.txt
+RUN gradle build --scan -P version="$BUILD_VERSION" \
+    && echo "${BUILD_VERSION}" >> version.txt
 
 ####################
 # Production Image #
