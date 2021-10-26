@@ -5,12 +5,13 @@ pipeline {
       steps {
         sh '''#!/bin/bash -xe
 
-BUILD_VERSION="$VERSION-$GIT_SHORTHASH"
+            BUILD_VERSION="$VERSION-$GIT_SHORTHASH"
 
-docker build --rm=false \\
---build-arg BUILD_VERSION="$BUILD_VERSION" \\
--t artifactory.localhost/flexion/unitconverter:$VERSION \\
--t artifactory.localhost/flexion/unitconverter:latest .'''
+            docker build --rm=false \\
+                --build-arg BUILD_VERSION="$BUILD_VERSION" \\
+                -t $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:$VERSION \\
+                -t $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:latest .'''
+
         script {
           def server = Artifactory.server 'local'
 
@@ -30,7 +31,7 @@ docker build --rm=false \\
 
   }
   environment {
-    ARTIFACTORY_DOCKER_REGISTRY = 'artifactory.localhost'
+    ARTIFACTORY_DOCKER_REGISTRY = 'artifactory.zerofactorial.io'
     ARTIFACTORY_DOCKER_REPOSITORY = 'flexion'
     VERSION = '0.0.8-BETA'
     DOCKER_IMAGE = 'unitconverter'
