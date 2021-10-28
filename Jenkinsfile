@@ -4,13 +4,10 @@ pipeline {
     stages {
         stage('Docker Image Build & Push') {
             steps {
-                sh '''#!/bin/bash -xe
-
-                    BUILD_VERSION="$VERSION-$GIT_SHORTHASH"
-
-                    docker build --rm=false \\
-                        --build-arg BUILD_VERSION="$BUILD_VERSION" \\
+                sh '''docker build --rm=false \\
+                        --build-arg BUILD_VERSION="$VERSION-$GIT_SHORTHASH" \\
                         -t $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:$VERSION \\
+                        -t $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:$VERSION-$GIT_SHORTHASH \\
                         -t $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:latest .'''
 
                 script {
@@ -25,6 +22,10 @@ pipeline {
                     //Versioned tag
                     def buildInfo_version = rtDocker.push env.ARTIFACTORY_DOCKER_REGISTRY + '/'+env.ARTIFACTORY_DOCKER_REPOSITORY+'/'+env.DOCKER_IMAGE+':'+env.VERSION, env.ARTIFACTORY_DOCKER_REPOSITORY
                     server.publishBuildInfo buildInfo_version
+
+                    //Versioned unique tag
+                    def buildInfo_version_shorthash = rtDocker.push env.ARTIFACTORY_DOCKER_REGISTRY + '/'+env.ARTIFACTORY_DOCKER_REPOSITORY+'/'+env.DOCKER_IMAGE+':'+env.VERSION+'-'+env.GIT_SHORTHASH, env.ARTIFACTORY_DOCKER_REPOSITORY
+                    server.publishBuildInfo buildInfo_version_shorthash
                 }
             }
         }
@@ -55,7 +56,7 @@ pipeline {
                                 -d \\
                                 --name $DEPLOY_CONTAINER_NAME \\
                                 -p 80:8080 \\
-                                $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:$VERSION" '''
+                                $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:$VERSION-$GIT_SHORTHASH" '''
                 }
             }
         }
