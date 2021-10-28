@@ -2,14 +2,25 @@ pipeline {
     agent any
 
     stages {
-        stage('Docker Image Build & Push') {
+        stage('Build') {
             steps {
                 sh '''docker build --rm=false \\
                         --build-arg BUILD_VERSION="$VERSION-$GIT_SHORTHASH" \\
                         -t $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:$VERSION \\
                         -t $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:$VERSION-$GIT_SHORTHASH \\
                         -t $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:latest .'''
+            }
+        }
 
+        stage('Publish') {
+
+            when {
+                expression {
+                    env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master'
+                }
+            }
+
+            steps {
                 script {
                     def server = Artifactory.server 'local'
 
@@ -31,6 +42,13 @@ pipeline {
         }
 
         stage('Deploy') {
+
+            when {
+                expression {
+                    env.BRANCH_NAME == 'master'
+                }
+            }
+
             steps {
 
                 sshagent(credentials: ['jenkins_ssh']){
