@@ -13,29 +13,43 @@ import java.math.RoundingMode;
 @RequestMapping("/api")
 public class TemperatureConverterRestController {
 
+    private static final int PRECISION = 1;
+
     @GetMapping("/convert")
     public String convert(
         @RequestParam(name = "input_value") double value,
+        @RequestParam(name = "student_response") double student_response,
         @RequestParam(name = "input_unit") String input_unit,
-        @RequestParam(name = "target_unit") String target_unit,
-        @RequestParam(name = "debug_precision", defaultValue = "1", required = false) int precision
+        @RequestParam(name = "target_unit") String target_unit
     ){
 
         try{
-
-            return String.valueOf(
-                new BigDecimal(
-                        new TemperatureConverter(
-                        input_unit
-                    ).convert(
-                        value,
-                        target_unit
-                    )
-                ).setScale(
-                    precision,
-                    RoundingMode.HALF_UP
-                )
+            double conversion = new TemperatureConverter(
+                    input_unit
+            ).convert(
+                    value,
+                    target_unit
             );
+
+            BigDecimal rounded_conversion = BigDecimal.valueOf(
+                conversion
+            ).setScale(
+                PRECISION,
+                RoundingMode.HALF_UP
+            );
+
+            System.out.println("Rounded conversion: " + rounded_conversion.toString());
+
+            BigDecimal rounded_student_response = BigDecimal.valueOf(
+                student_response
+            ).setScale(
+                PRECISION,
+                RoundingMode.HALF_UP
+            );
+
+            System.out.println("Rounded student response: " + rounded_student_response.toString() + "\n");
+
+            return rounded_conversion.equals(rounded_student_response)?("correct"):("incorrect");
 
         }catch(Exception exception){
             return exception.getMessage();
