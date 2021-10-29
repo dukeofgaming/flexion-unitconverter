@@ -42,11 +42,12 @@ class TemperatureConversionGradingApp extends React.Component {
         );
 
         fetch(
-            "/api/convert?"
-            + "input_value=" + input_value
-            + "&student_response=" + student_response
-            + "&input_unit=" + input_unit
-            + "&target_unit=" + target_unit
+            "/api/convert?" + new URLSearchParams({
+                input_value     : input_value,
+                student_response: student_response,
+                input_unit      : input_unit,
+                target_unit     : target_unit
+            })
         ).then(
             response => response.text()
         ).then(
