@@ -4,8 +4,8 @@ ARG GRADLE_VERSION="7.2"
 ARG NODE_DIST="17.x"
 ARG BUILD_VERSION="0.0.1-SNAPSHOT"
 
-RUN apt-get update && \
-    apt-get install -y \
+RUN apt-get update
+RUN apt-get install -y \
         curl \
         wget \
         unzip \
@@ -43,6 +43,7 @@ RUN mkdir -p /app \
     && adduser -S spring -G spring
 
 COPY --from=build --chown=spring:spring /app/build/libs/*.jar /app/
+COPY --from=build --chown=spring:spring /app/build/test-results/ /app/test-results
 COPY --from=build --chown=spring:spring /app/version.txt /app/version.txt
 
 USER spring:spring

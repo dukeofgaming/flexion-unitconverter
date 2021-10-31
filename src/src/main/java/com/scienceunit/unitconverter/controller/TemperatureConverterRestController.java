@@ -26,15 +26,18 @@ public class TemperatureConverterRestController {
         @RequestParam(name = "target_unit") String target_unit
     ){
         try{
-            double parsed_value             = Double.parseDouble(value);
-            double parsed_student_response  = Double.parseDouble(student_response);
 
-            double conversion = service.convert(parsed_value, input_unit, target_unit);
+            return service.grade(
+                Double.parseDouble(value),
+                input_unit,
+                target_unit,
+                Double.parseDouble(student_response),
+                1
+            );
 
-            System.out.println("Conversion: " + conversion);
-
-            return service.grade(conversion, parsed_student_response, 1);
-
+        }catch(NumberFormatException exception){
+            System.out.println("Exception: " + exception.toString());
+            return "invalid";
         }catch(Exception exception){
             System.out.println("Exception: " + exception.toString());
             return "invalid";

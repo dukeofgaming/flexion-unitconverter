@@ -1,5 +1,6 @@
 package com.scienceunit.unitconverter.service;
 
+import com.scienceunit.unitconverter.exception.InvalidConversionUnitException;
 import com.scienceunit.unitconverter.temperature.TemperatureConverter;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,7 @@ public class TemperatureConverterService {
      * @return
      * @throws Exception
      */
-    public double convert(double value, String input_unit, String target_unit) throws Exception {
+    public double convert(double value, String input_unit, String target_unit) throws InvalidConversionUnitException {
 
         return new TemperatureConverter(
             input_unit
@@ -32,17 +33,34 @@ public class TemperatureConverterService {
     }
 
     /**
-     * Takes two doubles and normalizes both by rounding to a given number of decimals, then compares them
-     * and outputs correct if they are the same after being rounded
-     *
-     * @param authoritative_answer
+     * Takes same arguments than convert, plus a student response and normalizes both answers by rounding to
+     * a given number of decimals, then compares them and outputs correct if they are the same after being rounded.
+     * 
+     * @param value
+     * @param input_unit
+     * @param target_unit
      * @param student_response
      * @param decimals
      * @return
      */
-    public String grade(double authoritative_answer, double student_response, int decimals){
+    public String grade(
+        double value,
+        String input_unit,
+        String target_unit,
+        double student_response,
+        int decimals
+    ) throws InvalidConversionUnitException {
+
+        double conversion = this.convert(
+                value,
+                input_unit,
+                target_unit
+        );
+
+        System.out.println("Conversion: " + conversion);
+
         BigDecimal rounded_authoritative_answer = BigDecimal.valueOf(
-            authoritative_answer
+            conversion
         ).setScale(
             decimals,
             RoundingMode.HALF_UP
