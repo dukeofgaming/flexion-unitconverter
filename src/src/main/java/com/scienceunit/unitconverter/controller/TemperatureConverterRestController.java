@@ -28,16 +28,16 @@ public class TemperatureConverterRestController {
         try{
 
             return service.grade(
-                Double.parseDouble(value),
+                value,
                 input_unit,
                 target_unit,
-                Double.parseDouble(student_response),
+                student_response,
                 1
             );
 
         }catch(NumberFormatException exception){
             System.out.println("Exception: " + exception.toString());
-            return "invalid";
+            return "incorrect";
         }catch(Exception exception){
             System.out.println("Exception: " + exception.toString());
             return "invalid";

@@ -25,15 +25,65 @@ public class TemperatureConverterServiceTests {
     }
 
     @Test
-    @DisplayName("Test ")
+    @DisplayName("Test grade rounding up")
     public void testGradeRoundUp() throws Exception {
         assertEquals(converterService.grade(
-            123,
+            "123",
             "celsius",
             "Kelvin",
-            396.2,
+            "396.2",
             1
         ),"correct");
+
+    }
+
+    @Test
+    @DisplayName("Test example scenario 1")
+    public void testExampleScenario1() throws Exception {
+        assertEquals(converterService.grade(
+            "84.2",
+            "Fahrenheit",
+            "Rankine",
+            "543.94",
+            1
+        ),"correct");
+
+    }
+
+    @Test
+    @DisplayName("Test example scenario 2")
+    public void testExampleScenario2() throws Exception {
+        assertEquals(converterService.grade(
+            "317.33",
+            "Kelvin",
+            "Fahrenheit",
+            "111.554",
+            1
+        ),"incorrect");
+
+    }
+    @Test
+    @DisplayName("Test example scenario 3")
+    public void testExampleScenario3() throws Exception {
+        assertEquals(converterService.grade(
+            "6.5",
+            "Fahrenheit",
+            "Rankine",
+            "dog",
+            1
+        ),"incorrect");
+
+    }
+    @Test
+    @DisplayName("Test example scenario 4")
+    public void testExampleScenario4() throws Exception {
+        assertEquals(converterService.grade(
+            "136.1",
+            "dogcow",
+            "Celsius",
+            "45.32",
+            1
+        ),"invalid");
 
     }
 

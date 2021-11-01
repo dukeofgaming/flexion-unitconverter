@@ -44,18 +44,24 @@ public class TemperatureConverterService {
      * @return
      */
     public String grade(
-        double value,
+        String value,
         String input_unit,
         String target_unit,
-        double student_response,
+        String student_response,
         int decimals
-    ) throws InvalidConversionUnitException {
+    ) {
 
-        double conversion = this.convert(
-                value,
+        double conversion;
+
+        try{
+            conversion = this.convert(
+                Double.parseDouble(value),
                 input_unit,
                 target_unit
-        );
+            );
+        }catch(InvalidConversionUnitException exception){
+            return "invalid";
+        }
 
         System.out.println("Conversion: " + conversion);
 
@@ -66,12 +72,17 @@ public class TemperatureConverterService {
             RoundingMode.HALF_UP
         );
 
-        BigDecimal rounded_student_response = BigDecimal.valueOf(
-            student_response
-        ).setScale(
-            decimals,
-            RoundingMode.HALF_UP
-        );
+        BigDecimal rounded_student_response;
+        try{
+            rounded_student_response = BigDecimal.valueOf(
+                Double.parseDouble(student_response)
+            ).setScale(
+                decimals,
+                RoundingMode.HALF_UP
+            );
+        }catch(NumberFormatException exception){
+            return "incorrect";
+        }
 
         System.out.println("Rounded authoritative answer: " + rounded_authoritative_answer.toString());
         System.out.println("Rounded student response: " + rounded_student_response.toString());
