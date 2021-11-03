@@ -4,11 +4,15 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh '''docker build --rm=false --output dockerout \\
+                //Since --ouput prevents tagging/storing of images, we need to tag first
+                sh '''docker build --rm=false \\
                         --build-arg BUILD_VERSION="$VERSION-$GIT_SHORTHASH" \\
                         -t $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:$VERSION \\
                         -t $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:$VERSION-$GIT_SHORTHASH \\
                         -t $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:latest .'''
+
+                //Using buildkit integration build output to export artifacts and test results
+                sh '''docker build --output dockerout .'''
             }
         }
 
@@ -97,7 +101,6 @@ pipeline {
         always {
             archiveArtifacts artifacts: 'dockerout/app/*.jar', fingerprint: true
             junit 'dockerout/app/test-results/test/*.xml'
-
         }
 
     }

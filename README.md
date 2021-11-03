@@ -15,10 +15,10 @@ If running in Windows, using WSL2 is recommended, make sure everything your envi
 
 In order to build and run from the host:
 
-```
-> gradle build -P version="1.2.3-STABLE"
-> cd src/build/libs
-> java -jar -Dserver.port=8080 unitconverter-0.0.1-SNAPSHOT.jar
+```shell
+gradle build -P version="1.2.3-STABLE"
+cd src/build/libs
+java -jar -Dserver.port=8080 unitconverter-0.0.1-SNAPSHOT.jar
 ```
 
 By default, the application will run on port 8080, but you can use the -D system property argument to change it 
@@ -37,9 +37,9 @@ Getting the CICD environment deployed locally with HTTPS is possible by using th
 [Certbot](https://certbot.eff.org/lets-encrypt/pip-nginx) was used to generate a wildcard certificate. 
 
 To start the environment, simply change to the `cicd/` directory and issue:
-```
-> docker-compose build 
-> docker-compose up -d
+```shell
+docker-compose build 
+docker-compose up -d
 ```
 
 Some considerations:
@@ -57,7 +57,9 @@ Some considerations:
   suited for production in a real setting as a malicious Jenkinsfile could be used to stop/delete the host's containers.
   <br>  
   At the **zerofactorial.io** Jenkins is configured to use the AWS EC2 plugin to spin up a separate build machine upon 
-  a new job request.
+  a new job request. The T2.Small instance will take ~2.5 minutes to come up, after that it will proceed to execute the 
+  Jenkinsfile, which will only publish images if the built branch is "develop" or "master", and it will only deploy on
+  "master".
 
 
 
