@@ -34,7 +34,6 @@ class TemperatureConversionGradingApp extends React.Component {
         }
 
 
-        var rounded_student_response    = Math.round(student_response*10)/10;
 
         console.log(
             "input_value=" + input_value
@@ -43,28 +42,18 @@ class TemperatureConversionGradingApp extends React.Component {
         );
 
         fetch(
-            "http://localhost:8080/api/convert?"
-            + "input_value=" + input_value
-            + "&input_unit=" + input_unit
-            + "&target_unit=" + target_unit
+            "/api/grade?" + new URLSearchParams({
+                input_value     : input_value,
+                student_response: student_response,
+                input_unit      : input_unit,
+                target_unit     : target_unit
+            })
         ).then(
             response => response.text()
         ).then(
-            authoritative_answer => {
-
-                console.log("Authoritative answer: " + authoritative_answer + " (" + typeof authoritative_answer +")");
-                console.log("Student (rounded): " + rounded_student_response + " (" + typeof rounded_student_response +")");
-
-                output_element.innerHTML = "<b>Output:</b>&nbsp;" + (
-                    (authoritative_answer === "invalid")?(
-                        "invalid"
-                    ):((parseFloat(authoritative_answer) === rounded_student_response))?(
-                        "correct"
-                    ):(
-                        "incorrect"
-                    )
-                );
-
+            response => {
+                console.log(response);
+                output_element.innerHTML = "<b>Output:</b>&nbsp;" + response;
             }
         );
     }

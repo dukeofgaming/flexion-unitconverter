@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh '''docker build --rm=false \\
+                sh '''docker build --rm=false --output dockerout \\
                         --build-arg BUILD_VERSION="$VERSION-$GIT_SHORTHASH" \\
                         -t $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:$VERSION \\
                         -t $ARTIFACTORY_DOCKER_REGISTRY/$ARTIFACTORY_DOCKER_REPOSITORY/$DOCKER_IMAGE:$VERSION-$GIT_SHORTHASH \\
@@ -90,6 +90,16 @@ pipeline {
         ARTIFACTORY_JENKINS_CREDENTIALS = credentials('jenkins_artifactory')
         DEPLOY_TARGET = 'flexion-unitconverter.zerofactorial.io'
         DEPLOY_CONTAINER_NAME = 'flexion-unitconverter'
+    }
+
+    post {
+
+        always {
+            archiveArtifacts artifacts: 'dockerout/app/*.jar', fingerprint: true
+            junit 'dockerout/app/test-results/test/*.xml'
+
+        }
+
     }
 
 }
