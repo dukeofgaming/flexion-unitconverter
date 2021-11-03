@@ -95,7 +95,7 @@ pipeline {
     post {
 
         always {
-
+            archiveArtifacts artifacts: 'dockerout/app/*.jar', fingerprint: true
             junit 'dockerout/app/test-results/test/*.xml'
 
         }
