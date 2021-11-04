@@ -88,7 +88,7 @@ pipeline {
     environment {
         ARTIFACTORY_DOCKER_REGISTRY = 'artifactory.zerofactorial.io'
         ARTIFACTORY_DOCKER_REPOSITORY = 'flexion'
-        VERSION = '0.0.9-BETA'
+        VERSION = '0.0.9'
         DOCKER_IMAGE = 'unitconverter'
         GIT_SHORTHASH = GIT_COMMIT.take(7)
         ARTIFACTORY_JENKINS_CREDENTIALS = credentials('jenkins_artifactory')
