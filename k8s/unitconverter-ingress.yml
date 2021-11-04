@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: unitconverter-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+#  defaultBackend:
+#    service:
+#      name: unitconverter-service
+#      port:
+#        number: 8080
+  rules:
+    - host: unitconverter.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: unitconverter-service
+                port:
+                  number: 8080
