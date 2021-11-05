@@ -38,7 +38,7 @@ RUN gradle build --scan -P version="$BUILD_VERSION" \
 FROM openjdk:16-jdk-alpine
 
 ARG BUILD_VERSION="0.0.1-SNAPSHOT"
-ENV APP_VERSION=${BUILD_VERSION}
+ENV FLEXION_UNITCONVERTER_APP_VERSION=${BUILD_VERSION}
 
 #Setup base environment
 RUN mkdir -p /app \
@@ -51,4 +51,4 @@ COPY --from=build --chown=spring:spring /app/build/test-results/ /app/test-resul
 USER spring:spring
 WORKDIR /app
 
-ENTRYPOINT java -jar unitconverter-${APP_VERSION}.jar
+ENTRYPOINT java -jar unitconverter-${FLEXION_UNITCONVERTER_APP_VERSION}.jar

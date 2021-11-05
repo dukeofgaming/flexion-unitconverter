@@ -27,7 +27,7 @@ public class UnitconverterApplication {
 			new Scanner(Runtime.getRuntime().exec("hostname").getInputStream()).useDelimiter("\\A").next()
 		).addAttribute(
 			"version",
-			System.getenv("APP_VERSION")
+			System.getenv("FLEXION_UNITCONVERTER_APP_VERSION")
 		);
 
 		return "home";
