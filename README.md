@@ -19,8 +19,8 @@ the project as is, the folowing dependencies are required:
 * [Flux](https://fluxcd.io/docs/installation/)
 
 If running in Windows, using WSL2 is recommended, make sure everything your environment is properly setup under bash. 
-
-## Building & running locally
+## Building & Running
+### Locally
 
 In order to build and run from the host, once you have installed and configured all the required dependencies:
 
@@ -34,7 +34,7 @@ java -jar -Dserver.port=8080 unitconverter-${FLEXION_UNITCONVERTER_APP_VERSION}.
 By default, the application will run on port 8080, but you can use the -D system property argument to change it 
 to something different.
 
-## Building & running with Docker
+### Docker
 
 The [Dockerfile](Dockerfile) at the root of this project already contains every dependency needed for building 
 and it is separated in a multi-stage build, where the build stage is based on Ubuntu, where it will produce the 
@@ -53,7 +53,7 @@ docker run -d \
         --name flexion-unitconverter \
         artifactory.zerofactorial.io/flexion/unitconverter:1.2.3
 ```
-## Running in Kubernetes (Docker Desktop)
+### Kubernetes (Docker Desktop)
 
 You can refer to the resource description files in [k8s/](./k8s). Note that the Ingress resource utilizes the 
 Kubernetes nginx Ingress class, so [the NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/deploy/#docker-desktop) must be installed first:
@@ -145,8 +145,7 @@ Some considerations:
   certs in the aforementioned folder. nginx will take care of assigning a subdomain corresponding to the application: 
   `jenkins.*` for Jenkins and `artifactory.*` for jFrog Container Registry. In a default local setting, this would be e.g. 
   `jenkins.localhost`.  
-  <br>  
-  
+  <br>
   - **Jenkins**: For local execution, Jenkins can use DID (Docker-In-Docker) by having a local installation
   of Docker within the container accessing the host's by communicating to the Docker daemon through `/var/run/docker.sock`, 
   this can be enabled by uncommenting the volume mount for that file in the Docker Commpose file. Such mechanism is not 
@@ -155,7 +154,17 @@ Some considerations:
   At the **zerofactorial.io** Jenkins is configured to use the AWS EC2 plugin to spin up a separate build machine upon 
   a new job request. The T2.Small instance will take ~2.5 minutes to come up, after that it will proceed to execute the 
   Jenkinsfile, which will only publish images if the built branch is "develop" or "master", and it will only deploy on
-  "master".
+  "master".  
+  <br>
+* **Jenkins** will update a simpler staging environment through the deployment stage as a CICD approach, publishing 
+  images when changes are integrated into the "develop" and "master" branches, and deploying to the staging environment
+  when changes are made to the master branch.  
+  <br>
+* **flux** will enable a GitOps approach for production by updating the live Kubernetes cluster when changes are made to
+  [k8s/production](./k8s/production).  
+  <br>  
+* It is possible to setup **flux** in your local Kubernetes environment, however, keep in mind there can be conflicts 
+  if other collaborators have done so as well.
 
 ## Live Environments
 
