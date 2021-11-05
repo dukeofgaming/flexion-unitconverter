@@ -27,7 +27,6 @@ pipeline {
             when {
                 anyOf {
                     branch 'develop';
-                    branch 'master';
                     branch 'release/*';
                 }
             }
@@ -53,10 +52,13 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Staging') {
 
             when {
-                branch 'master';
+                anyOf {
+                    branch 'develop';
+                    branch 'release/*';
+                }
             }
 
             steps {
@@ -92,14 +94,14 @@ pipeline {
     }
 
     environment {
-        ARTIFACTORY_DOCKER_REGISTRY = 'artifactory.zerofactorial.io'
-        ARTIFACTORY_DOCKER_REPOSITORY = 'flexion'
-        VERSION = '0.1.0'
-        DOCKER_IMAGE = 'unitconverter'
-        GIT_SHORTHASH = GIT_COMMIT.take(7)
+        ARTIFACTORY_DOCKER_REGISTRY     = 'artifactory.zerofactorial.io'
+        ARTIFACTORY_DOCKER_REPOSITORY   = 'flexion'
+        VERSION                         = '0.1.0'
+        DOCKER_IMAGE                    = 'unitconverter'
+        GIT_SHORTHASH                   = GIT_COMMIT.take(7)
         ARTIFACTORY_JENKINS_CREDENTIALS = credentials('jenkins_artifactory')
-        DEPLOY_TARGET = 'unitconverter-staging.zerofactorial.io'
-        DEPLOY_CONTAINER_NAME = 'flexion-unitconverter'
+        DEPLOY_TARGET                   = 'unitconverter-staging.zerofactorial.io'
+        DEPLOY_CONTAINER_NAME           = 'flexion-unitconverter'
     }
 
 }
