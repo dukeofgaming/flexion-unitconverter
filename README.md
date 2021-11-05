@@ -53,11 +53,23 @@ Kubernetes nginx Ingress class, so [the NGINX Ingress Controller](https://kubern
 
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.4/deploy/static/provider/cloud/deploy.yaml
+kubectl create namespace flexion
 ```
+After that, you will need to either do a `docker login artifactory.zerofactorial.io` with the credentials supplied by 
+Uzair, and then pull the image referenced in [k8s/unitconverter-deployment.yml](k8s/unitconverter-deployment.yml), or 
+preferably create a docker-registry secret with the name referenced as an imagePullSecret:
+
+```shell
+kubectl --namespace flexion \
+        create secret docker-registry artifactory.zerofactorial.io-docker-registry-secret \
+        --docker-server=artifactory.zerofactorial.io \
+        --docker-username=${ZEROFACTORIAL_JCR_USERNAME} \
+        --docker-password=${ZEROFACTORIAL_JCR_PASSWORD}
+```
+
 Then:
 
 ```shell
-kubectl create namespace flexion
 kubectl --namespace flexion apply -f k8s/unitconverter-deployment.yml
 kubectl --namespace flexion apply -f k8s/unitconverter-service.yml
 kubectl --namespace flexion apply -f k8s/unitconverter-ingress.yml
@@ -138,6 +150,119 @@ Some considerations:
 * Regular VPC
 * Deployed on master branch updates through Jenkins
 
+
+
+
+### Production
+
+* AWS EKS provisioned through `eksctl`:
+  ```shell
+  > eksctl create cluster \
+            --name flexion-k8s-cluster \
+            --region us-east-2 \
+            --with-oidc \
+            --ssh-access \
+            --ssh-public-key flexion-unitconverter
+  ```
+  <details>
+    <summary>Shell log</summary>
+  
+  ```shell
+  2021-11-04 18:59:01 [ℹ]  eksctl version 0.70.0
+  2021-11-04 18:59:01 [ℹ]  using region us-east-2
+  2021-11-04 18:59:01 [ℹ]  setting availability zones to [us-east-2b us-east-2c us-east-2a]
+  2021-11-04 18:59:01 [ℹ]  subnets for us-east-2b - public:192.168.0.0/19 private:192.168.96.0/19
+  2021-11-04 18:59:01 [ℹ]  subnets for us-east-2c - public:192.168.32.0/19 private:192.168.128.0/19
+  2021-11-04 18:59:01 [ℹ]  subnets for us-east-2a - public:192.168.64.0/19 private:192.168.160.0/19
+  2021-11-04 18:59:01 [ℹ]  nodegroup "ng-83061225" will use "" [AmazonLinux2/1.20]
+  2021-11-04 18:59:01 [ℹ]  using EC2 key pair %!q(*string=<nil>)
+  2021-11-04 18:59:01 [ℹ]  using Kubernetes version 1.20
+  2021-11-04 18:59:01 [ℹ]  creating EKS cluster "flexion-k8s-cluster" in "us-east-2" region with managed nodes
+  2021-11-04 18:59:01 [ℹ]  will create 2 separate CloudFormation stacks for cluster itself and the initial managed nodegroup
+  2021-11-04 18:59:01 [ℹ]  if you encounter any issues, check CloudFormation console or try 'eksctl utils describe-stacks --region=us-east-2 --cluster=flexion-k8s-cluster'
+  2021-11-04 18:59:01 [ℹ]  CloudWatch logging will not be enabled for cluster "flexion-k8s-cluster" in "us-east-2"
+  2021-11-04 18:59:01 [ℹ]  you can enable it with 'eksctl utils update-cluster-logging --enable-types={SPECIFY-YOUR-LOG-TYPES-HERE (e.g. all)} --region=us-east-2 --cluster=flexion-k8s-cluster'
+  2021-11-04 18:59:01 [ℹ]  Kubernetes API endpoint access will use default of {publicAccess=true, privateAccess=false} for cluster "flexion-k8s-cluster" in "us-east-2"
+  2021-11-04 18:59:01 [ℹ]
+  2 sequential tasks: { create cluster control plane "flexion-k8s-cluster",
+  2 sequential sub-tasks: {
+  4 sequential sub-tasks: {
+  wait for control plane to become ready,
+  associate IAM OIDC provider,
+  2 sequential sub-tasks: {
+  create IAM role for serviceaccount "kube-system/aws-node",
+  create serviceaccount "kube-system/aws-node",
+  },
+  restart daemonset "kube-system/aws-node",
+  },
+  create managed nodegroup "ng-83061225",
+  }
+  }
+  2021-11-04 18:59:01 [ℹ]  building cluster stack "eksctl-flexion-k8s-cluster-cluster"
+  2021-11-04 18:59:02 [ℹ]  deploying stack "eksctl-flexion-k8s-cluster-cluster"
+  2021-11-04 18:59:32 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-cluster"
+  2021-11-04 19:00:02 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-cluster"
+  2021-11-04 19:01:03 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-cluster"
+  2021-11-04 19:02:03 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-cluster"
+  2021-11-04 19:03:03 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-cluster"
+  2021-11-04 19:04:03 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-cluster"
+  2021-11-04 19:05:04 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-cluster"
+  2021-11-04 19:06:04 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-cluster"
+  2021-11-04 19:07:04 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-cluster"
+  2021-11-04 19:08:05 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-cluster"
+  2021-11-04 19:09:05 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-cluster"
+  2021-11-04 19:10:05 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-cluster"
+  2021-11-04 19:11:05 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-cluster"
+  2021-11-04 19:15:08 [ℹ]  building iamserviceaccount stack "eksctl-flexion-k8s-cluster-addon-iamserviceaccount-kube-system-aws-node"
+  2021-11-04 19:15:08 [ℹ]  deploying stack "eksctl-flexion-k8s-cluster-addon-iamserviceaccount-kube-system-aws-node"
+  2021-11-04 19:15:08 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-addon-iamserviceaccount-kube-system-aws-node"
+  2021-11-04 19:15:25 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-addon-iamserviceaccount-kube-system-aws-node"
+  2021-11-04 19:15:42 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-addon-iamserviceaccount-kube-system-aws-node"
+  2021-11-04 19:15:42 [ℹ]  serviceaccount "kube-system/aws-node" already exists
+  2021-11-04 19:15:42 [ℹ]  updated serviceaccount "kube-system/aws-node"
+  2021-11-04 19:15:42 [ℹ]  building managed nodegroup stack "eksctl-flexion-k8s-cluster-nodegroup-ng-83061225"
+  2021-11-04 19:15:42 [ℹ]  deploying stack "eksctl-flexion-k8s-cluster-nodegroup-ng-83061225"
+  2021-11-04 19:15:42 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-nodegroup-ng-83061225"
+  2021-11-04 19:16:15 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-nodegroup-ng-83061225"
+  2021-11-04 19:16:31 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-nodegroup-ng-83061225"
+  2021-11-04 19:16:48 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-nodegroup-ng-83061225"
+  2021-11-04 19:17:04 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-nodegroup-ng-83061225"
+  2021-11-04 19:17:21 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-nodegroup-ng-83061225"
+  2021-11-04 19:17:38 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-nodegroup-ng-83061225"
+  2021-11-04 19:17:55 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-nodegroup-ng-83061225"
+  2021-11-04 19:18:15 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-nodegroup-ng-83061225"
+  2021-11-04 19:18:32 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-nodegroup-ng-83061225"
+  2021-11-04 19:18:51 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-nodegroup-ng-83061225"
+  2021-11-04 19:19:08 [ℹ]  waiting for CloudFormation stack "eksctl-flexion-k8s-cluster-nodegroup-ng-83061225"
+  2021-11-04 19:19:08 [ℹ]  waiting for the control plane availability...
+  2021-11-04 19:19:08 [✔]  saved kubeconfig as "C:\\Users\\dukeo\\.kube\\config"
+  2021-11-04 19:19:08 [ℹ]  no tasks
+  2021-11-04 19:19:08 [✔]  all EKS cluster resources for "flexion-k8s-cluster" have been created
+  2021-11-04 19:19:09 [ℹ]  nodegroup "ng-83061225" has 2 node(s)
+  2021-11-04 19:19:09 [ℹ]  node "ip-192-168-5-149.us-east-2.compute.internal" is ready
+  2021-11-04 19:19:09 [ℹ]  node "ip-192-168-80-165.us-east-2.compute.internal" is ready
+  2021-11-04 19:19:09 [ℹ]  waiting for at least 2 node(s) to become ready in "ng-83061225"
+  2021-11-04 19:19:09 [ℹ]  nodegroup "ng-83061225" has 2 node(s)
+  2021-11-04 19:19:09 [ℹ]  node "ip-192-168-5-149.us-east-2.compute.internal" is ready
+  2021-11-04 19:19:09 [ℹ]  node "ip-192-168-80-165.us-east-2.compute.internal" is ready
+  2021-11-04 19:19:10 [ℹ]  kubectl command should work with "C:\\Users\\dukeo\\.kube\\config", try 'kubectl get nodes'
+  2021-11-04 19:19:10 [✔]  EKS cluster "flexion-k8s-cluster" in "us-east-2" region is ready
+  ```
+  </details>  
+  <br>
+* [AWS NLB](https://kubernetes.github.io/ingress-nginx/deploy/#network-load-balancer-nlb) used to expose NGINX Ingress controller
+  ```shell
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.4/deploy/static/provider/aws/deploy.yaml
+  ```
+* Secret of type docker-registry to pull image from artifactory.zerofactorial.io:
+  ```shell
+  kubectl --namespace flexion \
+  create secret docker-registry artifactory.zerofactorial.io-docker-registry-secret \
+  --docker-server=artifactory.zerofactorial.io \
+  --docker-username=${ZEROFACTORIAL_JCR_USERNAME} \
+  --docker-password=${ZEROFACTORIAL_JCR_PASSWORD}
+
+  ```
 
 ## Future improvements
 
