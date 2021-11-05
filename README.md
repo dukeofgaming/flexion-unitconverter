@@ -118,6 +118,16 @@ flux bootstrap github \
       --branch=develop \
       --personal
 ```
+## Application Usage
+
+The application usage is straight forward, and requeres no use of buttons. Simply type in a value and press the `tab` 
+key once you are done with each field, then the converter will send the request to the server for calculation.
+
+Once the server responds you will be able to see the output in the box at the bottom of the UI.
+
+**Note**: For the [staging environment](http://unitconverter-staging.zerofactorial.io/), this application runs in a single 
+container in a single server. In the [production environment](http://unitconverter.zerofactorial.io/), the application runs on Kubernetes, so every time you reload the page 
+you will be using a difference instance and should experience zero downtime during version upgrades.
 
 ## CICD Environment
 
@@ -302,9 +312,15 @@ Some considerations:
         --personal
   ```
 
-## Future improvements
+## Future Improvements
 
 * Provision AWS EKS Cluster through Terraform instead of command line. Currently, the AWS EKS Cluster was provided via 
   `eksctl`
 * Provision AWS EC2 Instance for staging through Terraform as well, currently, this was deployed manually.
-* Add HTTPS to both staging and production
+* Add HTTPS to both staging and production instances of the application
+* Migrate Artifactory JCR from embedded database to PostgreSQL (bundle JDBC driver & modified config file into a new 
+  Dockerfile built by docker-compose)
+* Upgrade Jenkins to latest version
+* Improve UI to use a variable row data grid, or a CSV/Excel importer... something more useful for teachers :)
+* Optimize build time with different mechanism to output the test results
+* Change implementation of TemperatureConverter class to something that does not require instantiation / more memory efficient

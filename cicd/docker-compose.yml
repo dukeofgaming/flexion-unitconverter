@@ -47,16 +47,16 @@ services:
     volumes:
       - artifactory_data:/var/opt/jfrog/artifactory
 
-  postgres:
-    image: postgres:13.4
-    networks:
-      artifactory:
-        aliases:
-          - postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=beer
+#  postgres:
+#    image: postgres:13.4
+#    networks:
+#      artifactory:
+#        aliases:
+#          - postgres
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#    environment:
+#      - POSTGRES_PASSWORD=beer
 
 volumes:
   jenkins_data:
