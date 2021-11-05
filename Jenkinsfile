@@ -94,11 +94,11 @@ pipeline {
     environment {
         ARTIFACTORY_DOCKER_REGISTRY = 'artifactory.zerofactorial.io'
         ARTIFACTORY_DOCKER_REPOSITORY = 'flexion'
-        VERSION = '0.0.9'
+        VERSION = '0.0.95'
         DOCKER_IMAGE = 'unitconverter'
         GIT_SHORTHASH = GIT_COMMIT.take(7)
         ARTIFACTORY_JENKINS_CREDENTIALS = credentials('jenkins_artifactory')
-        DEPLOY_TARGET = 'flexion-unitconverter.zerofactorial.io'
+        DEPLOY_TARGET = 'unitconverter-staging.zerofactorial.io'
         DEPLOY_CONTAINER_NAME = 'flexion-unitconverter'
     }
 
