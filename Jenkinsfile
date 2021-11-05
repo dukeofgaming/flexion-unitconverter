@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Build & Test') {
             steps {
                 //Since --ouput prevents tagging/storing of images, we need to tag first
                 sh '''docker build --rm=false \\
@@ -13,6 +13,12 @@ pipeline {
 
                 //Using buildkit integration build output to export artifacts and test results
                 sh '''docker build --output dockerout .'''
+
+                //Touching test results to avoid needless build error
+                sh '''touch dockerout/app/test-results/test/*.xml'''
+                
+                archiveArtifacts artifacts: 'dockerout/app/*.jar', fingerprint: true
+                junit 'dockerout/app/test-results/test/*.xml'
             }
         }
 
@@ -88,21 +94,12 @@ pipeline {
     environment {
         ARTIFACTORY_DOCKER_REGISTRY = 'artifactory.zerofactorial.io'
         ARTIFACTORY_DOCKER_REPOSITORY = 'flexion'
-        VERSION = '0.0.9'
+        VERSION = '0.0.96'
         DOCKER_IMAGE = 'unitconverter'
         GIT_SHORTHASH = GIT_COMMIT.take(7)
         ARTIFACTORY_JENKINS_CREDENTIALS = credentials('jenkins_artifactory')
-        DEPLOY_TARGET = 'flexion-unitconverter.zerofactorial.io'
+        DEPLOY_TARGET = 'unitconverter-staging.zerofactorial.io'
         DEPLOY_CONTAINER_NAME = 'flexion-unitconverter'
-    }
-
-    post {
-
-        always {
-            archiveArtifacts artifacts: 'dockerout/app/*.jar', fingerprint: true
-            junit 'dockerout/app/test-results/test/*.xml'
-        }
-
     }
 
 }

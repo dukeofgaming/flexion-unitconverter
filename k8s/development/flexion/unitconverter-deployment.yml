@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unitconverter-deployment
+  namespace: flexion
+  labels:
+    app: unitconverter
+    type: java-spring
+spec:
+  template:
+    metadata:
+      name: unitconverter-pod
+      labels:
+        app: unitconverter
+        type: java-spring
+    spec:
+      containers:
+        - name: unitconverter-container
+          image: artifactory.zerofactorial.io/flexion/unitconverter:0.0.96
+      imagePullSecrets:
+        - name: artifactory.zerofactorial.io-docker-registry-secret
+  replicas: 5
+  selector:
+    matchLabels:
+      app: unitconverter
+      type: java-spring

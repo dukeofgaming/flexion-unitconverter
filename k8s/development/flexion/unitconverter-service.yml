@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: unitconverter-service
+  namespace: flexion
+  labels:
+    app: unitconverter
+    type: service
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+
+  selector:
+    app: unitconverter
+    type: java-spring
