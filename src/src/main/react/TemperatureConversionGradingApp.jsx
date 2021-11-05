@@ -64,7 +64,7 @@ class TemperatureConversionGradingApp extends React.Component {
                 width: '450px'
             }}>
                 <Paper
-                    elevation={2}
+                    elevation={5}
                     sx={{
                         padding: '15px'
                 }}>
@@ -110,7 +110,7 @@ class TemperatureConversionGradingApp extends React.Component {
                         <Grid item xs={2}>
                             <Paper
                                 id="output"
-                                elevation={4}
+                                elevation={10}
                                 sx={{
                                     padding: '15px',
                                     'text-transform': 'capitalize',

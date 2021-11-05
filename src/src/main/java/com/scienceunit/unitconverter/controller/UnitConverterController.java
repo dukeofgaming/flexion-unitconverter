@@ -15,12 +15,14 @@ public class UnitConverterController {
     @GetMapping(value = {"","/"})
     public String home(Model model) throws IOException {
 
+        String version = System.getenv("FLEXION_UNITCONVERTER_APP_VERSION");
+
         model.addAttribute(
-                "hostname",
-                new Scanner(Runtime.getRuntime().exec("hostname").getInputStream()).useDelimiter("\\A").next()
+            "hostname",
+            new Scanner(Runtime.getRuntime().exec("hostname").getInputStream()).useDelimiter("\\A").next()
         ).addAttribute(
-                "version",
-                System.getenv("FLEXION_UNITCONVERTER_APP_VERSION")
+            "version",
+            (version != null)?(version):("unkown")
         );
 
         return "home";
