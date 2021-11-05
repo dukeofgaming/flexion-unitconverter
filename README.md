@@ -13,16 +13,82 @@ the project as is, the folowing dependencies are required:
 
 If running in Windows, using WSL2 is recommended, make sure everything your environment is properly setup under bash. 
 
-In order to build and run from the host:
+## Building & running locally
+
+In order to build and run from the host, once you have installed and configured all the required dependencies:
 
 ```shell
-gradle build -P version="1.2.3-STABLE"
+export FLEXION_UNITCONVERTER_APP_VERSION="1.2.3"
+gradle build -P version="${FLEXION_UNITCONVERTER_APP_VERSION}"
 cd src/build/libs
-java -jar -Dserver.port=8080 unitconverter-0.0.1-SNAPSHOT.jar
+java -jar -Dserver.port=8080 unitconverter-${FLEXION_UNITCONVERTER_APP_VERSION}.jar
 ```
 
 By default, the application will run on port 8080, but you can use the -D system property argument to change it 
 to something different.
+
+## Building & running with Docker
+
+The [Dockerfile](Dockerfile) at the root of this project already contains every dependency needed for building 
+and it is separated in a multi-stage build, where the build stage is based on Ubuntu, where it will produce the 
+required JAR file that will be passed to the second stage and final production image based on the OpenJDK Alpine
+distribution.
+
+It will also set the environment variable `FLEXION_UNITCONVERTER_APP_VERSION` which is read by the application 
+to display in the main UI.
+
+```shell
+docker build --build-arg BUILD_VERSION="1.2.3" \
+        -t artifactory.zerofactorial.io/flexion/unitconverter:1.2.3
+        
+docker run -d \
+        -p 80:8080 \
+        --name flexion-unitconverter \
+        artifactory.zerofactorial.io/flexion/unitconverter:1.2.3
+```
+## Running in Kubernetes (Docker Desktop)
+
+You can refer to the resource description files in [k8s/](k8s/). Note that the Ingress resource utilizes the 
+Kubernetes nginx Ingress class, so [the NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/deploy/#docker-desktop) must be installed first:
+
+```shell
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.4/deploy/static/provider/cloud/deploy.yaml
+```
+Then:
+
+```shell
+kubectl create namespace flexion
+kubectl --namespace flexion apply -f k8s/unitconverter-deployment.yml
+kubectl --namespace flexion apply -f k8s/unitconverter-service.yml
+kubectl --namespace flexion apply -f k8s/unitconverter-ingress.yml
+```
+A succesfull deployment should show a host correctly mapped to the service endpoints for the pods in the deployment:
+
+```shell
+> kubectl --namespace flexion describe ingress unitconverter-ingress
+
+Name:             unitconverter-ingress
+Namespace:        flexion
+Address:          localhost
+Default backend:  default-http-backend:80 (<error: endpoints "default-http-backend" not found>)
+Rules:
+  Host                     Path  Backends
+  ----                     ----  --------
+  unitconverter.localhost
+                           /   unitconverter-service:8080 (10.1.1.53:8080,10.1.1.54:8080,10.1.1.56:8080 + 7 more...)
+Annotations:               kubernetes.io/ingress.class: nginx
+                           nginx.ingress.kubernetes.io/rewrite-target: /
+Events:                    <none>
+```
+
+As well as an ingress with an assigned
+
+```shell
+> kubectl --namespace flexion get ingress
+NAME                    CLASS    HOSTS                     ADDRESS     PORTS   AGE
+unitconverter-ingress   <none>   unitconverter.localhost   localhost   80      5h49m
+
+```
 
 ## CICD Environment
 
@@ -61,8 +127,21 @@ Some considerations:
   Jenkinsfile, which will only publish images if the built branch is "develop" or "master", and it will only deploy on
   "master".
 
+## Live Environments
+
+### Staging
+
+[http://unitconverter-staging.zerofactorial.io/](http://unitconverter-staging.zerofactorial.io/)
+
+* EC2 T2.Micro instance 
+* Elastic IP bound to EC2 instance
+* Regular VPC
+* Deployed on master branch updates through Jenkins
 
 
 ## Future improvements
 
-* ...
+* Provision AWS EKS Cluster through Terraform instead of command line. Currently, the AWS EKS Cluster was provided via 
+  `eksctl`
+* Provision AWS EC2 Instance for staging through Terraform as well, currently, this was deployed manually.
+* Add HTTPS to both staging and production
