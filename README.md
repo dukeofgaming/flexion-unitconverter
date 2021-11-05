@@ -115,7 +115,7 @@ flux bootstrap github \
       --owner=dukeofgaming \
       --repository=flexion-unitconverter \
       --path=k8s/development \
-      --branch=development \
+      --branch=develop \
       --personal
 ```
 
