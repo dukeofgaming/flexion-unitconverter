@@ -164,7 +164,11 @@ Some considerations:
   [k8s/production](./k8s/production).  
   <br>  
 * It is possible to setup **flux** in your local Kubernetes environment, however, keep in mind there can be conflicts 
-  if other collaborators have done so as well.
+  if other collaborators have done so as well.  
+  <br>
+* This project follows the [GitFlow](https://nvie.com/posts/a-successful-git-branching-model/) branching model, 
+  therefore it is assumed that images will be publsihed with the right tag before releasing to master and updating
+  [the production unitconverter-deployment.yaml](./k8s/production/flexion/unitconverter-deployment.yml).
 
 ## Live Environments
 
