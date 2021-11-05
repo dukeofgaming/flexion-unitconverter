@@ -21,10 +21,12 @@ public class TemperatureConverterService {
      * @return
      * @throws Exception
      */
-    public double convert(double value, String input_unit, String target_unit) throws InvalidConversionUnitException {
+    public double convert(double value, String input_unit, String target_unit, int decimals) throws InvalidConversionUnitException {
 
         return new TemperatureConverter(
             input_unit
+        ).setPrecision(
+            decimals
         ).convert(
             value,
             target_unit
@@ -57,7 +59,8 @@ public class TemperatureConverterService {
             conversion = this.convert(
                 Double.parseDouble(value),
                 input_unit,
-                target_unit
+                target_unit,
+                decimals
             );
         }catch(NumberFormatException exception){
             return "invalid";
@@ -67,30 +70,21 @@ public class TemperatureConverterService {
 
         System.out.println("Conversion: " + conversion);
 
-        BigDecimal rounded_authoritative_answer = BigDecimal.valueOf(
-            conversion
-        ).setScale(
-            decimals,
-            RoundingMode.HALF_UP
-        );
-
-        BigDecimal rounded_student_response;
+        double rounded_student_response;
         try{
             rounded_student_response = BigDecimal.valueOf(
                 Double.parseDouble(student_response)
             ).setScale(
                 decimals,
                 RoundingMode.HALF_UP
-            );
+            ).doubleValue();
         }catch(NumberFormatException exception){
             return "incorrect";
         }
 
-        System.out.println("Rounded authoritative answer: " + rounded_authoritative_answer.toString());
-        System.out.println("Rounded student response: " + rounded_student_response.toString());
+        System.out.println("Rounded authoritative answer: " + conversion);
+        System.out.println("Rounded student response: " + rounded_student_response);
 
-        return rounded_authoritative_answer.equals(
-            rounded_student_response
-        )?("correct"):("incorrect");
+        return (conversion == rounded_student_response)?("correct"):("incorrect");
     }
 }

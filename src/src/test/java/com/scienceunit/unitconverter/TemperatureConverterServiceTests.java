@@ -15,16 +15,6 @@ public class TemperatureConverterServiceTests {
     private TemperatureConverterService converterService;
 
     @Test
-    @DisplayName("Test Celsius to Kelvin conversion")
-    public void testConvertCelsiusToKelvin() throws Exception {
-        assertEquals(converterService.convert(
-            123,
-            "celsius",
-            "Kelvin"
-        ),396.15);
-    }
-
-    @Test
     @DisplayName("Test bad teacher input throws invalid")
     public void testBadTeacherInput() throws Exception {
         assertEquals(converterService.grade(
