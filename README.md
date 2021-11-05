@@ -180,6 +180,17 @@ Some considerations:
   therefore it is assumed that images will be publsihed with the right tag before releasing to master and updating
   [the production unitconverter-deployment.yaml](./k8s/production/flexion/unitconverter-deployment.yml).
 
+### Updating environments
+
+* To update the staging environment:
+  - Bump the version for the application in the Jenkinsfile `VERSION` environment variable
+  - Follow the GitFlow process and merge your change into develop or release/* first to publish the image
+  - Merge to master
+* To update the production environment:
+  - Do all of the above
+  - Update the image reference [k8s/production/unitconverter-deployment.yml](./k8s/production/unitconverter-deployment.yml)
+  - Make sure changes are published to the `master` branch
+
 ## Live Environments
 
 ### Staging

@@ -25,8 +25,10 @@ pipeline {
         stage('Publish') {
 
             when {
-                expression {
-                    env.BRANCH_NAME == 'develop' || env.BRANCH_NAME == 'master'
+                anyOf {
+                    branch 'develop';
+                    branch 'master';
+                    branch 'release/*';
                 }
             }
 
@@ -54,9 +56,7 @@ pipeline {
         stage('Deploy') {
 
             when {
-                expression {
-                    env.BRANCH_NAME == 'master'
-                }
+                branch 'master';
             }
 
             steps {
@@ -94,7 +94,7 @@ pipeline {
     environment {
         ARTIFACTORY_DOCKER_REGISTRY = 'artifactory.zerofactorial.io'
         ARTIFACTORY_DOCKER_REPOSITORY = 'flexion'
-        VERSION = '0.0.96'
+        VERSION = '0.1.0'
         DOCKER_IMAGE = 'unitconverter'
         GIT_SHORTHASH = GIT_COMMIT.take(7)
         ARTIFACTORY_JENKINS_CREDENTIALS = credentials('jenkins_artifactory')
