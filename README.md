@@ -11,6 +11,13 @@ the project as is, the folowing dependencies are required:
 * nodeJS v16.9.0+
 * OpenJDK 16
 
+### Other tools
+
+* [Docker Desktop](https://www.docker.com/products/docker-desktop) w/ Kubernetes enabled
+* [AWS CLI](https://aws.amazon.com/cli/)
+* EKS CLI ([eksctl](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html))
+* [Flux](https://fluxcd.io/docs/installation/)
+
 If running in Windows, using WSL2 is recommended, make sure everything your environment is properly setup under bash. 
 
 ## Building & running locally
@@ -48,7 +55,7 @@ docker run -d \
 ```
 ## Running in Kubernetes (Docker Desktop)
 
-You can refer to the resource description files in [k8s/](k8s/). Note that the Ingress resource utilizes the 
+You can refer to the resource description files in [k8s/](./k8s). Note that the Ingress resource utilizes the 
 Kubernetes nginx Ingress class, so [the NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/deploy/#docker-desktop) must be installed first:
 
 ```shell
@@ -93,13 +100,23 @@ Annotations:               kubernetes.io/ingress.class: nginx
 Events:                    <none>
 ```
 
-As well as an ingress with an assigned
+As well as an ingress with an assigned address (if it shows blank it will not work):
 
 ```shell
 > kubectl --namespace flexion get ingress
 NAME                    CLASS    HOSTS                     ADDRESS     PORTS   AGE
 unitconverter-ingress   <none>   unitconverter.localhost   localhost   80      5h49m
 
+```
+In order to setup flux in the local environment:
+```shell
+export GITHUB_TOKEN=<your personal token goes here>
+flux bootstrap github \
+      --owner=dukeofgaming \
+      --repository=flexion-unitconverter \
+      --path=k8s/development \
+      --branch=development \
+      --personal
 ```
 
 ## CICD Environment
@@ -128,7 +145,8 @@ Some considerations:
   certs in the aforementioned folder. nginx will take care of assigning a subdomain corresponding to the application: 
   `jenkins.*` for Jenkins and `artifactory.*` for jFrog Container Registry. In a default local setting, this would be e.g. 
   `jenkins.localhost`.  
-  <br>
+  <br>  
+  
   - **Jenkins**: For local execution, Jenkins can use DID (Docker-In-Docker) by having a local installation
   of Docker within the container accessing the host's by communicating to the Docker daemon through `/var/run/docker.sock`, 
   this can be enabled by uncommenting the volume mount for that file in the Docker Commpose file. Such mechanism is not 
@@ -148,12 +166,11 @@ Some considerations:
 * EC2 T2.Micro instance 
 * Elastic IP bound to EC2 instance
 * Regular VPC
-* Deployed on master branch updates through Jenkins
-
-
-
+* Deployed on master branch updates through [Jenkinsfile](Jenkinsfile) as the CICD strategy
 
 ### Production
+
+[http://unitconverter.zerofactorial.io/](http://unitconverter.zerofactorial.io/)
 
 * AWS EKS provisioned through `eksctl`:
   ```shell
@@ -248,20 +265,28 @@ Some considerations:
   2021-11-04 19:19:10 [ℹ]  kubectl command should work with "C:\\Users\\dukeo\\.kube\\config", try 'kubectl get nodes'
   2021-11-04 19:19:10 [✔]  EKS cluster "flexion-k8s-cluster" in "us-east-2" region is ready
   ```
-  </details>  
-  <br>
+  </details>    
 * [AWS NLB](https://kubernetes.github.io/ingress-nginx/deploy/#network-load-balancer-nlb) used to expose NGINX Ingress controller
   ```shell
   kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.4/deploy/static/provider/aws/deploy.yaml
   ```
-* Secret of type docker-registry to pull image from artifactory.zerofactorial.io:
+* Secret of type docker-registry to pull image from [artifactory.zerofactorial.io](https://artifactory.zerofactorial.io):
   ```shell
   kubectl --namespace flexion \
   create secret docker-registry artifactory.zerofactorial.io-docker-registry-secret \
   --docker-server=artifactory.zerofactorial.io \
   --docker-username=${ZEROFACTORIAL_JCR_USERNAME} \
   --docker-password=${ZEROFACTORIAL_JCR_PASSWORD}
-
+  ```
+* [Flux](https://fluxcd.io/legacy/flux/tutorials/get-started/#set-up-flux) as the GitOps strategy, which will update the
+  production environment when there are changes in the [k8s/](./k8s)
+  ```shell
+  flux bootstrap github \
+        --owner=dukeofgaming \
+        --repository=flexion-unitconverter \
+        --path=k8s/production \
+        --branch=master \
+        --personal
   ```
 
 ## Future improvements

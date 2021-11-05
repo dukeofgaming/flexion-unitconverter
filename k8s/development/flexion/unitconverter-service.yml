@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: unitconverter-service
+  namespace: flexion
   labels:
     app: unitconverter
     type: service
