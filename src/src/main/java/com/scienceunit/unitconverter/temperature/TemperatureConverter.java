@@ -2,8 +2,13 @@ package com.scienceunit.unitconverter.temperature;
 
 import com.scienceunit.unitconverter.exception.InvalidConversionUnitException;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 public class TemperatureConverter {
     private ConverterStrategy converter = null;
+    private int precision_decimals      = 3;
+    private RoundingMode rounding_mode  = RoundingMode.HALF_UP;
 
     public TemperatureConverter() {}
 
@@ -37,20 +42,45 @@ public class TemperatureConverter {
         return this;
     }
 
+    public TemperatureConverter setPrecision(int decimals){
+        this.precision_decimals = decimals;
+        return this;
+    }
+
+    public TemperatureConverter setRoundingMode(RoundingMode rounding_mode){
+        this.rounding_mode = rounding_mode;
+        return this;
+    }
+
     public double convert(double value, String target_unit) throws InvalidConversionUnitException {
+
+        double conversion;
 
         switch (target_unit.toLowerCase()){
             case "celsius":
-                return this.converter.toCelsius(value);
+                conversion = this.converter.toCelsius(value);
+                break;
             case "fahrenheit":
-                return this.converter.toFahrenheit(value);
+                conversion = this.converter.toFahrenheit(value);
+                break;
             case "kelvin":
-                return this.converter.toKelvin(value);
+                conversion = this.converter.toKelvin(value);
+                break;
             case "rankine":
-                return this.converter.toRankine(value);
+                conversion = this.converter.toRankine(value);
+                break;
             default:
-                throw new InvalidConversionUnitException("Invalid target unit: " + target_unit.toLowerCase());
+                throw new InvalidConversionUnitException(
+                    "Invalid target unit: " + target_unit.toLowerCase()
+                );
         }
+
+        return BigDecimal.valueOf(
+            conversion
+        ).setScale(
+            this.precision_decimals,
+            this.rounding_mode
+        ).doubleValue();
 
     }
 

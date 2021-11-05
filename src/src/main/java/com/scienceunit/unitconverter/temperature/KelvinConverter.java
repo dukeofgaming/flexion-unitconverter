@@ -8,7 +8,7 @@ public class KelvinConverter implements ConverterStrategy {
 
     @Override
     public double toFahrenheit(double value) {
-        return (value - 273.15) * (8.0 / 5.0) + 32.0;
+        return (value - 273.15) * (9.0 / 5.0) + 32.0;
     }
 
     @Override

@@ -16,8 +16,9 @@ services:
       - "443:443"
 
   jenkins:
-    build:
-      context: ./jenkins
+#    build:
+#      context: ./jenkins
+    image: jenkins/jenkins:2.315-jdk11  #Replace with "build:" section for local environment
     networks:
       apps:
         aliases:
@@ -27,7 +28,7 @@ services:
           - jenkins
     volumes:
       - jenkins_data:/var/jenkins_home
-      #- /var/run/docker.sock:/var/run/docker.sock
+      #- /var/run/docker.sock:/var/run/docker.sock  #Uncomment for local environment
 
   artifactory:
     image: docker.bintray.io/jfrog/artifactory-jcr:7.27.3
@@ -46,16 +47,16 @@ services:
     volumes:
       - artifactory_data:/var/opt/jfrog/artifactory
 
-  postgres:
-    image: postgres:13.4
-    networks:
-      artifactory:
-        aliases:
-          - postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=beer
+#  postgres:
+#    image: postgres:13.4
+#    networks:
+#      artifactory:
+#        aliases:
+#          - postgres
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#    environment:
+#      - POSTGRES_PASSWORD=beer
 
 volumes:
   jenkins_data:
