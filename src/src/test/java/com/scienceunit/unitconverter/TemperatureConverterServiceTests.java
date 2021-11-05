@@ -25,6 +25,19 @@ public class TemperatureConverterServiceTests {
     }
 
     @Test
+    @DisplayName("Test bad teacher input throws invalid")
+    public void testBadTeacherInput() throws Exception {
+        assertEquals(converterService.grade(
+            "cowdog",
+            "celsius",
+            "Kelvin",
+            "396.2",
+            1
+        ),"invalid");
+
+    }
+
+    @Test
     @DisplayName("Test grade rounding up")
     public void testGradeRoundUp() throws Exception {
         assertEquals(converterService.grade(

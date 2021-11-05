@@ -19,28 +19,18 @@ public class TemperatureConverterRestController {
     public TemperatureConverterService service;
 
     @GetMapping("/grade")
-    public String convert(
+    public String grade(
         @RequestParam(name = "input_value") String value,
         @RequestParam(name = "student_response") String student_response,
         @RequestParam(name = "input_unit") String input_unit,
         @RequestParam(name = "target_unit") String target_unit
     ){
-        try{
-
-            return service.grade(
-                value,
-                input_unit,
-                target_unit,
-                student_response,
-                1
-            );
-
-        }catch(NumberFormatException exception){
-            System.out.println("Exception: " + exception.toString());
-            return "incorrect";
-        }catch(Exception exception){
-            System.out.println("Exception: " + exception.toString());
-            return "invalid";
-        }
+        return service.grade(
+            value,
+            input_unit,
+            target_unit,
+            student_response,
+            1
+        );
     }
 }

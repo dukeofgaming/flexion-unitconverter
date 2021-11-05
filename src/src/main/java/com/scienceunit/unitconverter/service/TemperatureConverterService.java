@@ -59,6 +59,8 @@ public class TemperatureConverterService {
                 input_unit,
                 target_unit
             );
+        }catch(NumberFormatException exception){
+            return "invalid";
         }catch(InvalidConversionUnitException exception){
             return "invalid";
         }
