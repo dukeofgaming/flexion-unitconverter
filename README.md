@@ -334,4 +334,6 @@ Some considerations:
 * Upgrade Jenkins to latest version
 * Improve UI to use a variable row data grid, or a CSV/Excel importer... something more useful for teachers :)
 * Optimize build time with different mechanism to output the test results
-* Change implementation of TemperatureConverter class to something that does not require instantiation / more memory efficient
+* Change implementation of TemperatureConverter class to something that does not require instantiation / more memory efficient (even thouugh it's just a micro-optimization)
+* Perhaps change the flux trigger from GitHub to a special registry for production, this way the last actual image could
+  be deployed, but for now, switching to a commit-tagged image to have precise control of what is deployed.
