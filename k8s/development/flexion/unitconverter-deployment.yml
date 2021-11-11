@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: unitconverter-container
-          image: artifactory.zerofactorial.io/flexion/unitconverter:0.1.0-f3afd41
+          image: artifactory.zerofactorial.io/flexion/unitconverter:0.1.0-cfd7582
       imagePullSecrets:
         - name: artifactory.zerofactorial.io-docker-registry-secret
   replicas: 5
