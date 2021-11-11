@@ -3,7 +3,6 @@ package com.scienceunit.unitconverter.temperature;
 import com.scienceunit.unitconverter.exception.InvalidConversionUnitException;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -34,7 +33,7 @@ public class TemperatureConverter {
             | InvocationTargetException
             | InstantiationException
             | IllegalAccessException
-                    
+
             converter_not_found_exception
         ){
             System.out.println(converter_not_found_exception.getMessage());
@@ -61,14 +60,12 @@ public class TemperatureConverter {
 
         try {
 
-            Method convert_method = this.converter.getClass().getMethod(
+            conversion = (double) this.converter.getClass().getMethod(
                 "to"
                 + target_unit.substring(0,1).toUpperCase()
                 + target_unit.substring(1).toLowerCase(),
                 new Class[]{Double.TYPE}
-            );
-
-            conversion = (double) convert_method.invoke(
+            ).invoke(
                 this.converter,
                 new Object[]{value}
             );
