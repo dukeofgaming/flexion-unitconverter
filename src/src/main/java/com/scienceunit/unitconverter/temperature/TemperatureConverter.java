@@ -2,6 +2,7 @@ package com.scienceunit.unitconverter.temperature;
 
 import com.scienceunit.unitconverter.exception.InvalidConversionUnitException;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -17,26 +18,27 @@ public class TemperatureConverter {
     }
 
     public TemperatureConverter setConverter(String source_unit) throws InvalidConversionUnitException {
+        try{
 
-        switch(source_unit.toLowerCase()){
-            case "celsius":
-                this.converter = new CelsiusConverter();
-                break;
+            this.converter = (ConverterStrategy) Class.forName(
+                "com.scienceunit.unitconverter.temperature."
+                + source_unit.substring(0,1).toUpperCase()
+                + source_unit.substring(1).toLowerCase()
+                + "Converter"
+            ).getConstructor().newInstance();
 
-            case "fahrenheit":
-                this.converter = new FahrenheitConverter();
-                break;
+        }catch (
+            ClassNotFoundException
+            | NoSuchMethodException
+            | InvocationTargetException
+            | InstantiationException
+            | IllegalAccessException
 
-            case "kelvin":
-                this.converter = new KelvinConverter();
-                break;
-
-            case "rankine":
-                this.converter = new RankineConverter();
-                break;
-
-            default:
-                throw new InvalidConversionUnitException("Invalid source unit: " + source_unit.toLowerCase());
+            converter_not_found_exception
+        ){
+            System.out.println(converter_not_found_exception.getMessage());
+            converter_not_found_exception.printStackTrace();
+            throw new InvalidConversionUnitException("Invalid source unit: " + source_unit.toLowerCase());
         }
 
         return this;
@@ -56,23 +58,30 @@ public class TemperatureConverter {
 
         double conversion;
 
-        switch (target_unit.toLowerCase()){
-            case "celsius":
-                conversion = this.converter.toCelsius(value);
-                break;
-            case "fahrenheit":
-                conversion = this.converter.toFahrenheit(value);
-                break;
-            case "kelvin":
-                conversion = this.converter.toKelvin(value);
-                break;
-            case "rankine":
-                conversion = this.converter.toRankine(value);
-                break;
-            default:
-                throw new InvalidConversionUnitException(
-                    "Invalid target unit: " + target_unit.toLowerCase()
-                );
+        try {
+
+            conversion = (double) this.converter.getClass().getMethod(
+                "to"
+                + target_unit.substring(0,1).toUpperCase()
+                + target_unit.substring(1).toLowerCase(),
+                new Class[]{Double.TYPE}
+            ).invoke(
+                this.converter,
+                new Object[]{value}
+            );
+
+        } catch (
+            IllegalAccessException
+            | InvocationTargetException
+            | NoSuchMethodException
+
+            method_not_found_exception
+        ) {
+            System.out.println(method_not_found_exception.getMessage());
+            method_not_found_exception.printStackTrace();
+            throw new InvalidConversionUnitException(
+                "Invalid target unit: " + target_unit.toLowerCase()
+            );
         }
 
         return BigDecimal.valueOf(
